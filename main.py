@@ -1,8 +1,6 @@
 def is_checked_already(row, col, part_of_island):
     '''
-    If already known that 
-    it is a part of an island,
-    no further recursive are needed.
+    If already known that it is a part of an island, no further recursive are needed.
     '''
 
     return (row, col) in part_of_island
@@ -17,7 +15,10 @@ def is_part_of_island(row, col, image, part_of_island, start_rc=[]):
         # if at the edge
         return True
 
-    left, top, right, bottom = (row, col - 1), (row - 1, col), (row, col +1), (row + 1, col)
+    left = (row, col - 1)
+    top = (row - 1, col)
+    right = (row, col + 1)
+    bottom = (row + 1, col)
 
     for r, c in [left, top, right, bottom]:
         # append to this array all the cells already checked - so it doens't loop
@@ -54,33 +55,32 @@ image1 = [
 ]
 
 image_outcome1 = [
-    [0,1,0,0,1],
-    [0,0,0,0,0],
-    [1,1,0,0,0],
-    [0,0,1,0,1]
+    [0, 1, 0, 0, 1],
+    [0, 0, 0, 0, 0],
+    [1, 1, 0, 0, 0],
+    [0, 0, 1, 0, 1]
 ]
 
 image2 = [
-    [0,1,1,0,1,1,1,0,1],
-    [0,0,1,0,1,0,0,0,1],
-    [1,1,0,1,0,1,1,1,1],
-    [0,0,1,0,0,0,1,0,1],
-    [0,0,0,0,1,1,0,0,1],
-    [0,0,1,0,1,1,0,0,1],
-    [0,0,1,0,0,0,1,0,1]
+    [0, 1, 1, 0, 1, 1, 1, 0, 1],
+    [0, 0, 1, 0, 1, 0, 0, 0, 1],
+    [1, 1, 0, 1, 0, 1, 1, 1, 1],
+    [0, 0, 1, 0, 0, 0, 1, 0, 1],
+    [0, 0, 0, 0, 1, 1, 0, 0, 1],
+    [0, 0, 1, 0, 1, 1, 0, 0, 1],
+    [0, 0, 1, 0, 0, 0, 1, 0, 1]
 ]
 
 image_outcome2 = [
-    [0,1,1,0,1,1,1,0,1],
-    [0,0,1,0,1,0,0,0,1],
-    [1,1,0,0,0,1,1,1,1],
-    [0,0,0,0,0,0,1,0,1],
-    [0,0,0,0,0,0,0,0,1],
-    [0,0,1,0,0,0,0,0,1],
-    [0,0,1,0,0,0,1,0,1]
+    [0, 1, 1, 0, 1, 1, 1, 0, 1],
+    [0, 0, 1, 0, 1, 0, 0, 0, 1],
+    [1, 1, 0, 0, 0, 1, 1, 1, 1],
+    [0, 0, 0, 0, 0, 0, 1, 0, 1],
+    [0, 0, 0, 0, 0, 0, 0, 0, 1],
+    [0, 0, 1, 0, 0, 0, 0, 0, 1],
+    [0, 0, 1, 0, 0, 0, 1, 0, 1]
 ]
 
-#print(islands(image2))
 
 assert(islands(image1) == image_outcome1)
 assert(islands(image2) == image_outcome2)
