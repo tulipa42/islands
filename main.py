@@ -1,18 +1,35 @@
-def is_checked_already(row, col, part_of_island):
+from typing import List, Tuple
+
+Image = List[List[int]]
+Coordinates = Tuple[int, int]
+
+def is_edge(row: int, col: int, image: Image) -> bool:
     '''
-    If already known that it is a part of an island, no further recursive are needed.
+    Trivial case for keeping the coordinates.
     '''
 
-    return (row, col) in part_of_island
+    return row in [0, len(image) - 1] or col in [0, len(image[0]) - 1]
 
 
-def is_part_of_island(row, col, image, part_of_island, start_rc=[]):
+def in_to_keep(row: int, col: int, to_keep: List[Coordinates]) -> bool:
+    '''
+    Check if the coordinates are already checked before.
+    '''
+
+    return (row, col) in to_keep
+
+
+def keep(row: int, col: int, image: Image, to_keep: List[Coordinates], part_of_cycle: List[Coordinates] = []) -> bool:
+    '''
+    Checks if a coordinate is *not* part of an island. If not, then return True, because we want to keep the 1.
+    '''
 
     if image[row][col] == 0:
+        # Coordinate can't be part of an island if it is zero.
         return False
 
-    if row in [0, len(image) - 1] or col in [0, len(image[0]) - 1]:
-        # if at the edge
+    if is_edge(row, col, image):
+        # The edge is not an island.
         return True
 
     left = (row, col - 1)
@@ -21,66 +38,34 @@ def is_part_of_island(row, col, image, part_of_island, start_rc=[]):
     bottom = (row + 1, col)
 
     for r, c in [left, top, right, bottom]:
-        # append to this array all the cells already checked - so it doens't loop
-        start_rc.append((row, col))
-        if (r, c) not in start_rc and (is_checked_already(r, c, part_of_island) or is_part_of_island(r, c, image, part_of_island, start_rc=start_rc)):
-            return True
+        # Check if either of the adjacent cells are connected to the edge.
+        part_of_cycle.append((row, col))  # Remember which coordinates are part of this recursion cycle
+        if (r, c) not in part_of_cycle:
+            # Check these coordinates ONLY if they are NOT part of the cycle.
+            if in_to_keep(r, c, to_keep) or keep(r, c, image, to_keep, part_of_cycle):
+                # If they are already in to_keep array, then True
+                # Check if the coordinates are to keepby calling this function again.
+                return True
 
     return False
 
 
-def islands(image):
+def islands(image: Image) -> Image:
+    '''
+    Remove island from the image and return the image without islands.
+    '''
 
-    part_of_island = []
-    new_image = image
-
-    for row, row_array in enumerate(image):
-        for col, value in enumerate(row_array):
-            if is_part_of_island(row, col, image, part_of_island, start_rc=[]):
-                part_of_island.append((row, col))
+    to_keep: List[Coordinates] = []
+    new_image = image  # Make a copy of the original image
 
     for row, row_array in enumerate(image):
         for col, value in enumerate(row_array):
-            if (row, col) not in part_of_island:
+            if keep(row, col, image, to_keep, part_of_cycle=[]):
+                to_keep.append((row, col))
+
+    for row, row_array in enumerate(image):
+        for col, value in enumerate(row_array):
+            if (row, col) not in to_keep:
                 new_image[row][col] = 0
 
     return new_image
-
-
-image1 = [
-    [0, 1, 0, 0, 1],
-    [0, 0, 0, 1, 0],
-    [1, 1, 0, 1, 0],
-    [0, 0, 1, 0, 1]
-]
-
-image_outcome1 = [
-    [0, 1, 0, 0, 1],
-    [0, 0, 0, 0, 0],
-    [1, 1, 0, 0, 0],
-    [0, 0, 1, 0, 1]
-]
-
-image2 = [
-    [0, 1, 1, 0, 1, 1, 1, 0, 1],
-    [0, 0, 1, 0, 1, 0, 0, 0, 1],
-    [1, 1, 0, 1, 0, 1, 1, 1, 1],
-    [0, 0, 1, 0, 0, 0, 1, 0, 1],
-    [0, 0, 0, 0, 1, 1, 0, 0, 1],
-    [0, 0, 1, 0, 1, 1, 0, 0, 1],
-    [0, 0, 1, 0, 0, 0, 1, 0, 1]
-]
-
-image_outcome2 = [
-    [0, 1, 1, 0, 1, 1, 1, 0, 1],
-    [0, 0, 1, 0, 1, 0, 0, 0, 1],
-    [1, 1, 0, 0, 0, 1, 1, 1, 1],
-    [0, 0, 0, 0, 0, 0, 1, 0, 1],
-    [0, 0, 0, 0, 0, 0, 0, 0, 1],
-    [0, 0, 1, 0, 0, 0, 0, 0, 1],
-    [0, 0, 1, 0, 0, 0, 1, 0, 1]
-]
-
-
-assert(islands(image1) == image_outcome1)
-assert(islands(image2) == image_outcome2)
