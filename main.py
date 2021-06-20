@@ -56,7 +56,7 @@ def islands(image: Image) -> Image:
     '''
 
     to_keep: List[Coordinates] = []
-    new_image = image  # Make a copy of the original image
+    new_image = image.copy()  # Make a copy of the original image
 
     for row, row_array in enumerate(image):
         for col, value in enumerate(row_array):
